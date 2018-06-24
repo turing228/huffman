@@ -61,6 +61,10 @@ public:
     void pop();
 
     Node *top() { return minHeap[1]; }
+
+    ~Heap() {
+        delete[] minHeap;
+    }
 };
 
 Node *constructHeap(std::vector<unsigned int> &);
