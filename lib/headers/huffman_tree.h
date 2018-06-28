@@ -8,65 +8,37 @@
 #include <cstdlib>
 #include <string>
 #include <vector>
+#include "consts.h"
 
-//using namespace std;
-
-class Node {
-    //unsigned char data;
-    //unsigned int frequency;
-    unsigned char min;
-    //Node * leftC = NULL;
-    //Node * rightC = NULL;
+class Tree {
+private:
+    long long int array[ALPH_SIZE * 2][5]; // 0 - frequency, 1 - data, 2 - leftC, 3 - rightC, 4 - number
+    int root;
 public:
-    unsigned int frequency;
-    unsigned char data;
-
-    Node *leftC = NULL;
-    Node *rightC = NULL;
-
-    Node() {}
-
-    Node(const Node &n) {
-        data = n.data;
-        frequency = n.frequency;
-        leftC = n.leftC;
-        rightC = n.rightC;
+    Tree() {
+        for (auto &i : array) {
+            i[0] = 0;
+            i[1] = -1;
+            i[2] = -1;
+            i[3] = -1;
+            i[4] = -1;
+        }
+        root = 0;
     }
 
-    Node(unsigned char d, unsigned int f) : leftC(NULL), rightC(NULL) {
-        data = d;
-        frequency = f;
-        min = d;
-    }
+    void fillCodebook(std::vector<std::string> &, std::string &, long long int);
 
-    Node(Node *, Node *);
+    void constructHeap(std::vector<unsigned int> &);
 
-    void fillCodebook(std::vector<std::string> &, std::string &);
+    bool isEmpty();
 
-    bool operator>(const Node &);
+    long long int getRoot();
+
+    long long int getLeft(long long int);
+
+    long long int getRight(long long int);
+
+    long long int getData(long long int);
 };
-
-class Heap {
-    Node **minHeap;
-    int heapSize;
-public:
-    Heap() {
-        heapSize = 0;
-        minHeap = new Node *[257]();
-    } // max of 255 characters
-    void push(Node *);
-
-    int size() { return heapSize; }
-
-    void pop();
-
-    Node *top() { return minHeap[1]; }
-
-    ~Heap() {
-        delete[] minHeap;
-    }
-};
-
-Node *constructHeap(std::vector<unsigned int> &);
 
 #endif //HUFFMAN_HUFFMAN_TREE_H

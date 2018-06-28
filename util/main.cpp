@@ -9,26 +9,26 @@
 
 #include <iostream>
 #include "headers/file_encoder.h"
-//#include "../lib/headers/encode.h"
 #include "headers/file_decoder.h"
 #include <ctime>
+#include <utility>
 
 void bye(int n, char *t[]) {
     std::cout << "!!! Incorrect input !!!" << std::endl;
-    std::cout << "Expected:" << std::endl << "INSTRUCTION (encode or decode) path_to_INPUT_FILE path_to_OUTPUT_FILE"
+    std::cout << "Expected:" << std::endl << "INSTRUCTION (-e or -d) path_to_INPUT_FILE path_to_OUTPUT_FILE"
               << std::endl << "Received:" << std::endl;
     for (int i = 1; i < n; ++i) {
         std::cout << t[i] << ' ';
     }
 }
 
-void encode_main(std::string input, std::string output) {
+void encode_main(const std::string &input, std::string output) {
     std::cout << "Encoding..." << std::endl;
     clock_t t0 = clock();
     try {
-        encode(input, output);
+        encode(input, std::move(output));
     }
-    catch (std::runtime_error const e) {
+    catch (std::runtime_error const &e) {
         std::cout << "Encoding of " << input << " has been crashed" << std::endl << e.what();
         return;
     }
@@ -36,13 +36,13 @@ void encode_main(std::string input, std::string output) {
     std::cout << "Encoded in: " << double(t1 - t0) / CLOCKS_PER_SEC << "s.";
 }
 
-void decode_main(std::string input, std::string output) {
+void decode_main(const std::string &input, std::string output) {
     std::cout << "Decoding..." << std::endl;
     clock_t t0 = clock();
     try {
-        decode(input, output);
+        decode(input, std::move(output));
     }
-    catch (std::runtime_error const e) {
+    catch (std::runtime_error const &e) {
         std::cout << "Decoding of " << input << " has been crashed" << std::endl << e.what();
         return;
     }

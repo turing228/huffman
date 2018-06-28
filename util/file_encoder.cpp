@@ -7,6 +7,9 @@
 void encode(std::string input, std::string output) {
     std::ios::sync_with_stdio(false);
     std::ifstream cin(input);
+    if (!cin) {
+        throw std::runtime_error("Input file is not existing");
+    }
     cin >> std::noskipws;
 
     std::vector<unsigned char> block;
@@ -29,7 +32,7 @@ void encode(std::string input, std::string output) {
 
 void write(encoder &a, std::vector<unsigned char> &block, std::ifstream &cin, std::ofstream &cout) {
     unsigned char nextChar;
-    int cur = 0;
+    size_t cur = 0;
     writeSmall(a, cout);
     while (cin >> nextChar) {
         block[cur] = nextChar;
@@ -64,7 +67,7 @@ void writeSmall(encoder &a, std::ofstream &cout) {
 
 void fillFreq(encoder &a, std::vector<unsigned char> &block, std::ifstream &cin) {
     unsigned char nextChar;
-    int cur = 0;
+    size_t cur = 0;
     while (cin >> nextChar) {
         if (cur == SIZE) {
             a.fillFreq(block, cur);

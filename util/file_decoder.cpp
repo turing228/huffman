@@ -7,6 +7,9 @@
 void decode(std::string input, std::string output) {
     std::ios::sync_with_stdio(false);
     std::ifstream cin(input);
+    if (!cin) {
+        throw std::runtime_error("Input file is not existing");
+    }
     cin >> std::noskipws;
 
     decoder b;
@@ -27,6 +30,10 @@ void write(decoder &b, std::ifstream &cin, std::ofstream &cout) {
     char nextChar;
     int cur = 0;
     while (cin >> nextChar) {
+        if (cur >= SIZE) {
+            cur++;
+            cur--;
+        }
         block[cur] = nextChar;
         cur++;
         if (cur == SIZE) {
@@ -52,9 +59,9 @@ void fillFreq(decoder &b, std::ifstream &cin) {
     std::vector<unsigned char> block_fillFreq;
     block_fillFreq.resize(SIZE);
 
-    for (int i = 0; i < 256 * 4; i++) {
+    for (int i = 0; i < ALPH_SIZE * 4; i++) {
         cin >> block_fillFreq[i];
     }
 
-    b.fillFreq(block_fillFreq, 256 * 4);
+    b.fillFreq(block_fillFreq, ALPH_SIZE * 4);
 }

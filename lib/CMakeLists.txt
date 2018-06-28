@@ -10,7 +10,7 @@ endif()
 set(LIB encode.cpp
         decode.cpp
         headers/decode.h
-        headers/encode.h huffman_tree.cpp headers/huffman_tree.h headers/consts.h)
+        headers/encode.h huffman_tree.cpp headers/huffman_tree.h headers/consts.h headers/common.h common.cpp)
 
 add_library(HUFFMAN_LIB STATIC
         ${LIB})

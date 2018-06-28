@@ -7,36 +7,33 @@
 
 #include "huffman_tree.h"
 #include "consts.h"
+#include "common.h"
 
 #include <string>
-//#include <map>
 
 class decoder {
 private:
     std::vector<unsigned int> frequencies;
     std::vector<std::string> codebook;
-    Node *root;
-    //std::map<std::string, int> codebook_map;
+    Tree T;
 
     void writeSmall(std::string &);
 
     void write(std::vector<char> &, std::string &);
 
-    void putOut(std::vector<char> &);
 
 public:
+
     void decode();
 
     decoder() {
-        frequencies.assign(256, 0);
-        codebook.assign(256, "");
+        frequencies.assign(ALPH_SIZE, 0);
+        codebook.assign(ALPH_SIZE, "");
         result.resize(SIZE);
         result_size = 0;
     }
 
     std::string decode(std::string);
-
-    void fillFreq(std::vector<unsigned char> &);
 
     void fillFreq(std::vector<unsigned char> &, size_t);
 
@@ -46,7 +43,5 @@ public:
 
     void putOut(std::vector<char> &, size_t);
 };
-
-std::vector<unsigned char> strChToVector(std::string);
 
 #endif //HUFFMAN_DECODE_H

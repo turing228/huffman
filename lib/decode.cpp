@@ -4,48 +4,24 @@
 
 #include "headers/decode.h"
 
-void decoder::fillFreq(std::vector<unsigned char> &block) {
-    for (size_t i = 0; i < 256; ++i) {
-        frequencies[i] = (block[4 * i] << 24) + (block[4 * i + 1] << 16) + (block[4 * i + 2] << 8) + block[4 * i + 3];
-    }
-}
-
-std::vector<unsigned char> strChToVector(std::string s) {
-    std::vector<unsigned char> v;
-    for (size_t i = 0; i < s.size(); ++i) {
-        v.push_back(s[i]);
-    }
-    return v;
-}
-
-std::vector<char> strCharToVector(std::string s) {
-    std::vector<char> v;
-    for (size_t i = 0; i < s.size(); ++i) {
-        v.push_back(s[i]);
-    }
-    return v;
-}
-
 void decoder::writeSmall(std::string &s) {
-    //unsigned long long temp;
     size_t result_size = this->result_size;
     for (size_t i = 0; i < result_size; ++i) {
         s += result[i];
-        //cout << b.result[i];
     }
 }
 
 void decoder::write(std::vector<char> &block, std::string &s) {
-    putOut(block);
+    putOut(block, block.size());
     writeSmall(s);
 }
 
 std::string decoder::decode(std::string s) {
-    std::vector<unsigned char> block_freq = strChToVector(s.substr(0, 256 * 4));
-    fillFreq(block_freq);
+    std::vector<unsigned char> block_freq = strToVectorUnsigned(s.substr(0, ALPH_SIZE * 4));
+    fillFreq(block_freq, block_freq.size());
     decode();
     std::string ans;
-    std::vector<char> block = strCharToVector(s.substr(256 * 4, s.size() - 256 * 4));
+    std::vector<char> block = strToVector(s.substr(ALPH_SIZE * 4, s.size() - ALPH_SIZE * 4));
     write(block, ans);
     return ans;
 }
@@ -57,234 +33,49 @@ void decoder::fillFreq(std::vector<unsigned char> &block, size_t block_size) {
 }
 
 void decoder::decode() {
-    root = constructHeap(frequencies);
+    T.constructHeap(frequencies);
     std::string code;
-
-    if (root) {
-        if (!root->leftC && !root->rightC) {
-            code = "0";
-        }
-        if (root != NULL) {
-            root->fillCodebook(codebook, code);
-        }
+    if (T.isEmpty()) {
+        code = "0";
     }
-
-    /*for (size_t i = 0; i < 256; ++i) {
-        codebook_map.emplace(codebook[i], i);
-    }*/
-}
-
-void decoder::putOut(std::vector<char> &block) {
-    size_t block_size = block.size();
-    Node *cur = root;
-    result_size = 0;
-    char temp;
-    int bitCounter = 0;
-    for (size_t g = 0; g < block_size; ++g) {
-        temp = block[g];
-        bitCounter = 0;
-        while (bitCounter < 8) {
-            if ((temp >> (7 - bitCounter)) & 0x01) {
-                if (!cur->rightC) {
-                    auto j = int(cur->data);
-                    if (frequencies[j]) {
-                        result[result_size] = (unsigned char) j;
-                        result_size++;
-                        frequencies[j]--;
-                    }
-                    cur = root;
-                } else {
-                    cur = cur->rightC;
-                }
-            } else {
-                if (!cur->leftC) {
-                    auto j = int(cur->data);
-                    if (frequencies[j]) {
-                        result[result_size] = (unsigned char) j;
-                        result_size++;
-                        frequencies[j]--;
-                    }
-                    cur = root;
-                } else {
-                    cur = cur->leftC;
-                }
-            }
-            if (cur->data) {
-                auto j = int(cur->data);
-                cur = root;
-                if (frequencies[j]) {
-                    result[result_size] = (unsigned char) j;
-                    result_size++;
-                    frequencies[j]--;
-                }
-            }
-            bitCounter++;
-        }
+    if (T.getRoot() != -2) {
+        T.fillCodebook(codebook, code, T.getRoot());
     }
 }
 
 void decoder::putOut(std::vector<char> &block, size_t block_size) {
-    Node *cur = root;
+    long long int root = T.getRoot();
+    long long int cur = root;
     result_size = 0;
     char temp;
     int bitCounter = 0;
-    int all = 0;
     for (size_t g = 0; g < block_size; ++g) {
         temp = block[g];
         bitCounter = 0;
-        //cur=root;
-        if (result_size == 182) {
-            all++;
-            all--;
-        }
         while (bitCounter < 8) {
             if ((temp >> (7 - bitCounter)) & 0x01) {
-                if (!cur->rightC) {
-                    auto j = int(cur->data);
-                    if (frequencies[j]) {
-                        result[result_size] = (unsigned char) j;
-                        result_size++;
-                        frequencies[j]--;
-                        all++;
-                    } /*else {
-                        return;
-                    }*/
-                    cur = root;
-                    //break;
-                } else {
-                    cur = cur->rightC;
+                if (T.getRight(cur) != -1) {
+                    cur = T.getRight(cur);
                 }
             } else {
-                if (!cur->leftC) {
-                    auto j = int(cur->data);
-                    if (frequencies[j]) {
-                        result[result_size] = (unsigned char) j;
-                        result_size++;
-                        frequencies[j]--;
-                        all++;
-                    } /*else {
-                        return;
-                    }*/
-                    cur = root;
-                    //break;
-                } else {
-                    cur = cur->leftC;
+                if (T.getLeft(cur) != -1) {
+                    cur = T.getLeft(cur);
                 }
             }
-            if (!cur->leftC && !cur->rightC) {
-                auto j = int(cur->data);
+            if (T.getData(cur) != -1) {
+                auto j = T.getData(cur);
                 cur = root;
                 if (frequencies[j]) {
-                    result[result_size] = (unsigned char) j;
+                    if (result_size >= result.size()) {
+                        result.push_back((unsigned char) j);
+                    } else {
+                        result[result_size] = (unsigned char) j;
+                    }
                     result_size++;
                     frequencies[j]--;
-                    all++;
-                } /*else {
-                    return;
-                }*/
+                }
             }
-            //temp = temp >> 1;
             bitCounter++;
         }
-        /*if (bitCounter==8){
-            auto j = int(cur->data);
-            cur = root;
-            if (frequencies[j]) {
-                result[result_size] = (unsigned char) j;
-                result_size++;
-                frequencies[j]--;
-            } else {
-                return;
-            }
-        }*/
     }
-    /*result_size = 0;
-    for (size_t g = 0; g < block_size; ++g) {
-        cur = root;
-        int i = 0;
-        while (cur->data == 0 || i < 8) {
-            if ((block[g] >> i) & 0x01) {
-                if (!cur->rightC)
-                    break;
-                else
-                    cur = cur->rightC;
-            } else {
-                if (!cur->leftC)
-                    break;
-                else
-                    cur = cur->leftC;
-            }
-            ++i;
-        }
-        auto j = int(cur->data);
-
-        if (frequencies[j]) {
-            result[result_size] = (unsigned char) j;
-            result_size++;
-            // //cout << (unsigned char) j;
-            //code.clear();
-            frequencies[j]--;
-            //break;
-        } else {
-            //cout<<all<<' '<<op;
-            return;
-        }
-    }*/
 }
-
-/*
-void decoder::decode(std::string input, std::string output) {
-    std::ios::sync_with_stdio(false);
-    std::ifstream cin(input);
-    cin >> noskipws;
-    char nextByte;
-    for (int i = 0; i < 256; i++) {
-        cin.fillFreq((char *) &frequencies[i], 4);
-    }
-
-    Node *root = constructHeap(frequencies);
-    string code;
-    if (root != NULL) {
-        root->fillCodebook(codebook, code);
-    }
-    std::ofstream cout(output);
-
-    std::map<string, int> codebook_map;
-    for (size_t i = 0; i < 256; ++i) {
-        codebook_map.emplace(codebook[i], i);
-    }
-
-    Node *cur;
-
-    while (cin >> nextByte) {
-        cur = root;
-
-        int i = 0;
-        while (cur->data == 0 || i < 8) {
-            if ((nextByte >> i) & 0x01) {
-                if (!cur->rightC)
-                    break;
-                else
-                    cur = cur->rightC;
-            } else {
-                if (!cur->leftC)
-                    break;
-                else
-                    cur = cur->leftC;
-            }
-            ++i;
-        }
-        auto j = int(cur->data);
-
-        if (frequencies[j]) {
-            cout << (unsigned char) j;
-            //code.clear();
-            frequencies[j]--;
-            //break;
-        } else {
-            //cout<<all<<' '<<op;
-            return;
-        }
-    }
-
-}*/
