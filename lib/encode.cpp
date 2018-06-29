@@ -16,7 +16,8 @@ void encoder::writeSmall(std::string &s) {
 
 void encoder::write(std::vector<unsigned char> &block, std::string &s) {
     writeSmall(s);
-    putOut(block, block.size());
+    std::string ans;
+    putOut(block, block.size(), ans, true);
     writeSmall(s);
 }
 
@@ -75,10 +76,10 @@ unsigned long long calc(std::string &s, size_t pos, size_t num) {
     return ans;
 }
 
-void encoder::putOut(std::vector<unsigned char> &block, size_t block_size) {
+void encoder::putOut(std::vector<unsigned char> &block, size_t block_size, std::string &ans, bool is_last) {
     size_t i;
     result_size = 0;
-    std::string ans;
+    //std::string ans;
     size_t h = 0;
     size_t x = PART, l;
     while (h < block_size) {
@@ -91,13 +92,14 @@ void encoder::putOut(std::vector<unsigned char> &block, size_t block_size) {
         h += x;
 
         l = ans.size();
-        for (i = 0; i < l / 64; ++i) {
+        for (i = 0; i < (size_t) (l / 64); ++i) {
             result[result_size] = calc(ans, i * 64, 64);
             result_size++;
         }
         ans = ans.substr(l - l % 64, l % 64);
     }
-    if (!ans.empty()) {
+
+    if (is_last && !ans.empty()) {
         result[result_size] = calc(ans, 0, ans.size());
         result_size++;
     }

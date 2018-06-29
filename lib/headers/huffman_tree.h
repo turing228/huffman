@@ -10,19 +10,25 @@
 #include <vector>
 #include "consts.h"
 
+struct node {
+    long long int frequency, data, leftC, rightC, number;
+
+    node() {
+        frequency = INF;
+        data = -1;
+        leftC = -1;
+        rightC = -1;
+        number = -1;
+    }
+};
+
 class Tree {
 private:
-    long long int array[ALPH_SIZE * 2][5]; // 0 - frequency, 1 - data, 2 - leftC, 3 - rightC, 4 - number
+    node array[ALPH_SIZE * 2];
+    //long long int array[ALPH_SIZE * 2][5]; // 0 - frequency, 1 - data, 2 - leftC, 3 - rightC, 4 - number
     int root;
 public:
     Tree() {
-        for (auto &i : array) {
-            i[0] = 0;
-            i[1] = -1;
-            i[2] = -1;
-            i[3] = -1;
-            i[4] = -1;
-        }
         root = 0;
     }
 

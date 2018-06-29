@@ -29,21 +29,18 @@ void write(decoder &b, std::ifstream &cin, std::ofstream &cout) {
 
     char nextChar;
     int cur = 0;
+    long long int cur_root = b.getRoot();
     while (cin >> nextChar) {
-        if (cur >= SIZE) {
-            cur++;
-            cur--;
-        }
         block[cur] = nextChar;
         cur++;
         if (cur == SIZE) {
-            b.putOut(block, cur);
+            b.putOut(block, cur, cur_root);
             writeSmall(b, cout);
             cur = 0;
         }
     }
     if (cur != 0) {
-        b.putOut(block, cur);
+        b.putOut(block, cur, cur_root);
         writeSmall(b, cout);
     }
 }

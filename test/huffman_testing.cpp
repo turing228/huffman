@@ -230,6 +230,32 @@ TEST(correctness_random, encode_decode_gigantic) {
     }
 }
 
+TEST(correctness_files, encode_decode_pack) {
+    std::string original = "pack-50a0a6219863eb10905555ca17e59fc1affc8c13.pack";
+    std::string encoded = "pack-50a0a6219863eb10905555ca17e59fc1affc8c13.pack_e";
+    std::string decoded = "pack-50a0a6219863eb10905555ca17e59fc1affc8c13.pack_ed";
+
+    encode(original, encoded);
+    decode(encoded, decoded);
+
+    std::ifstream cin(original);
+    std::string original_string;
+
+    std::ifstream cin2(decoded);
+    std::string decoded_string;
+
+    while (getline(cin, original_string) && getline(cin2, decoded_string)) {
+        if (original_string != decoded_string) {
+            break;
+        }
+    }
+
+    EXPECT_EQ(original_string, decoded_string);
+
+    remove(encoded.c_str());
+    remove(decoded.c_str());
+}
+
 TEST(correctness_files, encode_decode_empty) {
     std::string original = "empty";
     std::string encoded = "empty_e";
@@ -240,14 +266,20 @@ TEST(correctness_files, encode_decode_empty) {
 
     std::ifstream cin(original);
     std::string original_string;
-    getline(cin, original_string);
 
     std::ifstream cin2(decoded);
     std::string decoded_string;
-    getline(cin2, decoded_string);
+
+    while (getline(cin, original_string) && getline(cin2, decoded_string)) {
+        if (original_string != decoded_string) {
+            break;
+        }
+    }
 
     EXPECT_EQ(original_string, decoded_string);
 
+    remove(encoded.c_str());
+    remove(decoded.c_str());
     remove(encoded.c_str());
     remove(decoded.c_str());
 }
@@ -262,11 +294,15 @@ TEST(correctness_files, encode_decode_TESTS) {
 
     std::ifstream cin(original);
     std::string original_string;
-    getline(cin, original_string);
 
     std::ifstream cin2(decoded);
     std::string decoded_string;
-    getline(cin2, decoded_string);
+
+    while (getline(cin, original_string) && getline(cin2, decoded_string)) {
+        if (original_string != decoded_string) {
+            break;
+        }
+    }
 
     EXPECT_EQ(original_string, decoded_string);
 
@@ -284,11 +320,15 @@ TEST(correctness_files, encode_decode_8) {
 
     std::ifstream cin(original);
     std::string original_string;
-    getline(cin, original_string);
 
     std::ifstream cin2(decoded);
     std::string decoded_string;
-    getline(cin2, decoded_string);
+
+    while (getline(cin, original_string) && getline(cin2, decoded_string)) {
+        if (original_string != decoded_string) {
+            break;
+        }
+    }
 
     EXPECT_EQ(original_string, decoded_string);
 
@@ -306,11 +346,15 @@ TEST(correctness_files, encode_decode_80) {
 
     std::ifstream cin(original);
     std::string original_string;
-    getline(cin, original_string);
 
     std::ifstream cin2(decoded);
     std::string decoded_string;
-    getline(cin2, decoded_string);
+
+    while (getline(cin, original_string) && getline(cin2, decoded_string)) {
+        if (original_string != decoded_string) {
+            break;
+        }
+    }
 
     EXPECT_EQ(original_string, decoded_string);
 

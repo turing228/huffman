@@ -34,17 +34,18 @@ void write(encoder &a, std::vector<unsigned char> &block, std::ifstream &cin, st
     unsigned char nextChar;
     size_t cur = 0;
     writeSmall(a, cout);
+    std::string cur_ans;
     while (cin >> nextChar) {
         block[cur] = nextChar;
         cur++;
         if (cur == SIZE) {
-            a.putOut(block, cur);
+            a.putOut(block, cur, cur_ans, false);
             writeSmall(a, cout);
             cur = 0;
         }
     }
     if (cur != 0) {
-        a.putOut(block, cur);
+        a.putOut(block, cur, cur_ans, true);
         writeSmall(a, cout);
     }
 }

@@ -41,7 +41,11 @@ public:
 
     unsigned int result_size;
 
-    void putOut(std::vector<char> &, size_t);
+    void putOut(std::vector<char> &, size_t, long long int &);
+
+    long long int getRoot() {
+        return T.getRoot();
+    }
 };
 
 #endif //HUFFMAN_DECODE_H

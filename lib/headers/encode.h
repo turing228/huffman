@@ -28,7 +28,7 @@ public:
     unsigned int result_size;
     Tree T;
 
-    void putOut(std::vector<unsigned char> &, size_t);
+    void putOut(std::vector<unsigned char> &, size_t, std::string &, bool);
 
     void fillFreq(std::vector<unsigned char> &, size_t);
 

@@ -12,7 +12,8 @@ void decoder::writeSmall(std::string &s) {
 }
 
 void decoder::write(std::vector<char> &block, std::string &s) {
-    putOut(block, block.size());
+    long long int root = getRoot();
+    putOut(block, block.size(), root);
     writeSmall(s);
 }
 
@@ -43,9 +44,9 @@ void decoder::decode() {
     }
 }
 
-void decoder::putOut(std::vector<char> &block, size_t block_size) {
+void decoder::putOut(std::vector<char> &block, size_t block_size, long long int &cur) {
     long long int root = T.getRoot();
-    long long int cur = root;
+    //long long int cur = root;
     result_size = 0;
     char temp;
     int bitCounter = 0;
